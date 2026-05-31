@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: autodeploy
+  labels:
+    app: autodeploy-lab
+    managed-by: kubectl

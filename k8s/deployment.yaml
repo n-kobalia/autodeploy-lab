@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autodeploy-lab
+  namespace: autodeploy
+  labels:
+    app: autodeploy-lab
+    version: "1.0.0"
+spec:
+  replicas: 2
+
+  # Tells Kubernetes which pods this deployment manages
+  selector:
+    matchLabels:
+      app: autodeploy-lab
+
+  # Rolling update strategy — replaces pods gradually, never
+  # taking down more than 1 at a time. Zero downtime deploys.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+
+  template:
+    metadata:
+      labels:
+        app: autodeploy-lab
+        version: "1.0.0"
+    spec:
+      containers:
+        - name: autodeploy-lab
+          image: nkobalia/autodeploy-lab:latest
+          imagePullPolicy: Always
+
+          ports:
+            - containerPort: 5000
+
+          # Load config from ConfigMap
+          envFrom:
+            - configMapRef:
+                name: autodeploy-lab-config
+
+          # Load secrets individually
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: autodeploy-lab-secret
+                  key: SECRET_KEY
+
+          # Liveness probe: restarts the pod if the app is frozen
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            failureThreshold: 3
+
+          # Readiness probe: removes pod from load balancer if not ready
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+
+          # Resource requests and limits
+          # requests: minimum guaranteed resources
+          # limits: maximum allowed resources
+          resources:
+            requests:
+              cpu: "100m"      # 100 millicores = 0.1 CPU
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"

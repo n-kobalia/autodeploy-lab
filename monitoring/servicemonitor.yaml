@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: autodeploy-lab-monitor
+  namespace: monitoring
+  labels:
+    # This label is required for Prometheus to discover this ServiceMonitor
+    release: prometheus-stack
+spec:
+  # Look for services in the autodeploy namespace
+  namespaceSelector:
+    matchNames:
+      - autodeploy
+
+  # Match services with this label
+  selector:
+    matchLabels:
+      app: autodeploy-lab
+
+  endpoints:
+    - port: http          # matches the port name in your service.yaml
+      path: /metrics      # your Flask app's metrics endpoint
+      interval: 15s       # scrape every 15 seconds

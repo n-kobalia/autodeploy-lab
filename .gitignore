@@ -1,0 +1,40 @@
+/app/venv/
+__pycache__/
+*.pyc
+.env
+# Terraform state
+*.tfstate
+*.tfstate.*
+
+# Terraform working directory
+**/.terraform/*
+.terraform/
+.terraform.lock.hcl
+
+# Variable files (often contain secrets)
+*.tfvars
+*.tfvars.json
+
+# Terraform plans
+*.tfplan
+plan.out
+
+# Local overrides
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI config (may contain credentials)
+.terraformrc
+terraform.rc
+
+# Environment files
+.env
+.env.*
+
+# Sensitive key files
+*.pem
+*.key
+*.p12
+*.pfx
