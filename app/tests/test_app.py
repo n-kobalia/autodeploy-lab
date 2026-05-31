@@ -16,7 +16,7 @@ def test_home_contains_message(client):
     response = client.get('/')
     data = response.get_json()
     assert 'message' in data
-    assert data['message'] == 'AutoDeploy Lab is running on Oracle Cloud via GitOps'
+    assert data['message'] == 'Hi from AutoDeploy Lab!'
 
 def test_health_returns_200(client):
     response = client.get('/health')

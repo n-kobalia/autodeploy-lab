@@ -45,7 +45,7 @@ def home():
     app_version = os.environ.get('APP_VERSION', '1.0.0')
     environment = os.environ.get('ENVIRONMENT', 'development')
     return jsonify({
-        'message': 'AutoDeploy Lab is running on Oracle Cloud via GitOps',
+        'message': 'Hi from AutoDeploy Lab!',
         'version': app_version,
         'environment': environment
     })
