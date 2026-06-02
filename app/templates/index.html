@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AutoDeploy Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #0a0e17;
+        --bg2: #111827;
+        --bg3: #1a2235;
+        --border: rgba(99, 179, 237, 0.15);
+        --border2: rgba(99, 179, 237, 0.3);
+        --text: #e2e8f0;
+        --muted: #64748b;
+        --accent: #63b3ed;
+        --accent2: #4fd1c7;
+        --green: #68d391;
+        --yellow: #f6e05e;
+        --red: #fc8181;
+        --mono: "IBM Plex Mono", monospace;
+        --sans: "IBM Plex Sans", sans-serif;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--sans);
+        min-height: 100vh;
+        padding: 0;
+        overflow-x: hidden;
+      }
+
+      .grid-bg {
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(99, 179, 237, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(99, 179, 237, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .container {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 60px 24px 80px;
+        position: relative;
+        z-index: 1;
+      }
+
+      header {
+        margin-bottom: 56px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--accent);
+        border: 1px solid var(--border2);
+        border-radius: 4px;
+        padding: 4px 10px;
+        margin-bottom: 24px;
+        letter-spacing: 0.05em;
+      }
+
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+
+      h1 {
+        font-size: clamp(32px, 5vw, 48px);
+        font-weight: 300;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        color: var(--text);
+        margin-bottom: 16px;
+      }
+
+      h1 span {
+        color: var(--accent);
+        font-weight: 500;
+      }
+
+      .subtitle {
+        font-size: 16px;
+        color: var(--muted);
+        font-weight: 300;
+        line-height: 1.6;
+        max-width: 520px;
+      }
+
+      .stack-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 24px;
+      }
+
+      .tag {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--muted);
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        padding: 3px 8px;
+        letter-spacing: 0.03em;
+      }
+
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 48px 0;
+      }
+
+      .section-label {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+      }
+
+      .endpoints {
+        display: grid;
+        gap: 2px;
+      }
+
+      .endpoint {
+        display: grid;
+        grid-template-columns: 80px 1fr auto;
+        align-items: center;
+        gap: 16px;
+        padding: 14px 20px;
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        text-decoration: none;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+        cursor: pointer;
+      }
+
+      .endpoint:hover {
+        border-color: var(--border2);
+        background: var(--bg3);
+      }
+
+      .method {
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--accent2);
+        letter-spacing: 0.05em;
+      }
+
+      .path {
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--text);
+      }
+
+      .desc {
+        font-size: 13px;
+        color: var(--muted);
+        text-align: right;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-top: 0;
+      }
+
+      .info-card {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 16px 20px;
+      }
+
+      .info-label {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.05em;
+        margin-bottom: 8px;
+      }
+
+      .info-value {
+        font-family: var(--mono);
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text);
+      }
+
+      .info-value.green {
+        color: var(--green);
+      }
+      .info-value.accent {
+        color: var(--accent);
+      }
+
+      .pipeline {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        flex-wrap: wrap;
+        row-gap: 12px;
+      }
+
+      .step {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 10px 14px;
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .step-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--bg3);
+        border: 1px solid var(--border2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: var(--accent);
+        flex-shrink: 0;
+      }
+
+      .arrow {
+        font-size: 12px;
+        color: var(--border2);
+        padding: 0 4px;
+        flex-shrink: 0;
+      }
+
+      footer {
+        margin-top: 56px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .footer-left {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 20px;
+      }
+
+      .footer-links a {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--muted);
+        text-decoration: none;
+        transition: color 0.15s;
+      }
+
+      .footer-links a:hover {
+        color: var(--accent);
+      }
+
+      @media (max-width: 600px) {
+        .endpoint {
+          grid-template-columns: 70px 1fr;
+        }
+        .desc {
+          display: none;
+        }
+        .pipeline {
+          gap: 4px;
+        }
+        .step {
+          font-size: 11px;
+          padding: 8px 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid-bg"></div>
+    <div class="container">
+      <header>
+        <div class="badge">
+          <div class="dot"></div>
+          production · oracle cloud
+        </div>
+        <h1>AutoDeploy<br /><span>Lab</span></h1>
+        <p class="subtitle">
+          A production-grade DevOps pipeline — containerized with Docker,
+          orchestrated by Kubernetes, deployed via GitOps with ArgoCD, and
+          monitored with Prometheus and Grafana.
+        </p>
+        <div class="stack-row">
+          <span class="tag">Python / Flask</span>
+          <span class="tag">Docker</span>
+          <span class="tag">Kubernetes</span>
+          <span class="tag">GitHub Actions</span>
+          <span class="tag">Terraform</span>
+          <span class="tag">ArgoCD</span>
+          <span class="tag">Prometheus</span>
+          <span class="tag">Grafana</span>
+          <span class="tag">Loki</span>
+          <span class="tag">Oracle Cloud</span>
+        </div>
+      </header>
+
+      <div class="section-label">system info</div>
+      <div class="info-grid" id="info-grid">
+        <div class="info-card">
+          <div class="info-label">status</div>
+          <div class="info-value green" id="status-val">checking...</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">environment</div>
+          <div class="info-value accent" id="env-val">—</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">version</div>
+          <div class="info-value" id="ver-val">—</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">uptime check</div>
+          <div class="info-value" id="uptime-val">—</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-label">api endpoints</div>
+      <div class="endpoints">
+        <a class="endpoint" href="/" onclick="return false;">
+          <div class="method">GET</div>
+          <div class="path">/</div>
+          <div class="desc">app info</div>
+        </a>
+        <a class="endpoint" href="/health" target="_blank">
+          <div class="method">GET</div>
+          <div class="path">/health</div>
+          <div class="desc">liveness probe</div>
+        </a>
+        <a class="endpoint" href="/items" target="_blank">
+          <div class="method">GET</div>
+          <div class="path">/items</div>
+          <div class="desc">sample resource</div>
+        </a>
+        <a class="endpoint" href="/metrics" target="_blank">
+          <div class="method">GET</div>
+          <div class="path">/metrics</div>
+          <div class="desc">prometheus scrape target</div>
+        </a>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-label">deployment pipeline</div>
+      <div class="pipeline">
+        <div class="step">
+          <div class="step-icon">1</div>
+          git push
+        </div>
+        <div class="arrow">→</div>
+        <div class="step">
+          <div class="step-icon">2</div>
+          pytest
+        </div>
+        <div class="arrow">→</div>
+        <div class="step">
+          <div class="step-icon">3</div>
+          docker build
+        </div>
+        <div class="arrow">→</div>
+        <div class="step">
+          <div class="step-icon">4</div>
+          docker push
+        </div>
+        <div class="arrow">→</div>
+        <div class="step">
+          <div class="step-icon">5</div>
+          update manifest
+        </div>
+        <div class="arrow">→</div>
+        <div class="step">
+          <div class="step-icon">6</div>
+          argocd sync
+        </div>
+        <div class="arrow">→</div>
+        <div class="step">
+          <div class="step-icon">7</div>
+          k8s rollout
+        </div>
+      </div>
+
+      <footer>
+        <div class="footer-left">
+          autodeploy-lab · built with kubeadm on oracle cloud
+        </div>
+        <div class="footer-links">
+          <a href="https://github.com/n-kobalia/autodeploy-lab" target="_blank"
+            >github</a
+          >
+          <a href="/metrics" target="_blank">metrics</a>
+          <a href="/health" target="_blank">health</a>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      async function fetchStatus() {
+        try {
+          const [homeRes, healthRes] = await Promise.all([
+            fetch("/"),
+            fetch("/health"),
+          ]);
+          const home = await homeRes.json();
+          const health = await healthRes.json();
+          document.getElementById("status-val").textContent =
+            health.status === "healthy" ? "healthy" : "degraded";
+          document.getElementById("status-val").style.color =
+            health.status === "healthy" ? "var(--green)" : "var(--red)";
+          document.getElementById("env-val").textContent =
+            home.environment || "—";
+          document.getElementById("ver-val").textContent =
+            "v" + (home.version || "—");
+          document.getElementById("uptime-val").textContent =
+            new Date().toISOString().slice(11, 19) + " UTC";
+        } catch (e) {
+          document.getElementById("status-val").textContent = "unreachable";
+          document.getElementById("status-val").style.color = "var(--red)";
+        }
+      }
+      fetchStatus();
+    </script>
+  </body>
+</html>

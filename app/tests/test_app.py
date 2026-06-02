@@ -12,11 +12,6 @@ def test_home_returns_200(client):
     response = client.get('/')
     assert response.status_code == 200
 
-def test_home_contains_message(client):
-    response = client.get('/')
-    data = response.get_json()
-    assert 'message' in data
-    assert data['message'] == 'Hi from AutoDeploy Lab!'
 
 def test_health_returns_200(client):
     response = client.get('/health')
