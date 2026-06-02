@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: autodeploy-lab
-          image: nkobalia/autodeploy-lab:a006152b52d967f287c78c95abe4a1c9a473ff78
+          image: nkobalia/autodeploy-lab:3b3004242fdb7adeb5a34bc8c2d624d9e6f3bf6e
           imagePullPolicy: Always
 
           ports:
