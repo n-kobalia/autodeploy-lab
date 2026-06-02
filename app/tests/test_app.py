@@ -32,3 +32,9 @@ def test_items_returns_list(client):
 def test_metrics_endpoint_exists(client):
     response = client.get('/metrics')
     assert response.status_code == 200
+
+def test_api_returns_json(client):
+    response = client.get('/api')
+    assert response.status_code == 200
+    data = response.get_json()
+    assert 'message' in data

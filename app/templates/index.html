@@ -462,7 +462,7 @@
       async function fetchStatus() {
         try {
           const [homeRes, healthRes] = await Promise.all([
-            fetch("/"),
+            fetch("/api"),
             fetch("/health"),
           ]);
           const home = await homeRes.json();
