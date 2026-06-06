@@ -30,7 +30,7 @@ spec:
     spec:
       initContainers:
         - name: db-migrate
-          image: nkobalia/autodeploy-lab:3b3004242fdb7adeb5a34bc8c2d624d9e6f3bf6e
+          image: nkobalia/autodeploy-lab:74b7734d6cac1f15229e99c3bbdcb4b517e63c6b
           command: ["flask", "db", "upgrade"]
           env:
             - name: FLASK_APP
@@ -42,7 +42,7 @@ spec:
                   key: DATABASE_URL
       containers:
         - name: autodeploy-lab
-          image: nkobalia/autodeploy-lab:d22dbab6874aa7a02bfb764296076187b3abe1c9
+          image: nkobalia/autodeploy-lab:74b7734d6cac1f15229e99c3bbdcb4b517e63c6b
           imagePullPolicy: Always
 
           ports:
