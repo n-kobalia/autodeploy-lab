@@ -28,6 +28,18 @@ spec:
         app: autodeploy-lab
         version: "1.0.0"
     spec:
+      initContainers:
+        - name: db-migrate
+          image: nkobalia/autodeploy-lab:3b3004242fdb7adeb5a34bc8c2d624d9e6f3bf6e
+          command: ["flask", "db", "upgrade"]
+          env:
+            - name: FLASK_APP
+              value: app.py
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: DATABASE_URL
       containers:
         - name: autodeploy-lab
           image: nkobalia/autodeploy-lab:d22dbab6874aa7a02bfb764296076187b3abe1c9
@@ -48,6 +60,11 @@ spec:
                 secretKeyRef:
                   name: autodeploy-lab-secret
                   key: SECRET_KEY
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: DATABASE_URL
 
           # Liveness probe: restarts the pod if the app is frozen
           livenessProbe:

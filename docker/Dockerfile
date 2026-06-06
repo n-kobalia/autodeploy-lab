@@ -23,6 +23,7 @@ COPY --from=builder /install /usr/local
 # Copy only the application code
 COPY app/app.py .
 COPY app/templates/ templates/
+COPY app/migrations/ migrations/
 
 # Environment variables with safe defaults
 ENV PORT=5000

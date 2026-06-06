@@ -31,10 +31,10 @@ terraform.rc
 
 # Environment files
 .env
-.env.*
 
 # Sensitive key files
 *.pem
 *.key
 *.p12
 *.pfx
+docker/.env

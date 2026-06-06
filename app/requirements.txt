@@ -1,3 +1,6 @@
 flask==3.0.3
 prometheus-client==0.20.0
 pytest==8.2.2
+flask-sqlalchemy==3.1.1
+psycopg[binary]
+flask-migrate==4.0.7
